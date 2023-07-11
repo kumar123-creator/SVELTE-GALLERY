@@ -11,7 +11,6 @@
 	let currentPage = 1;
 	
 	const imagesPerPage = 9;
-	
 	const CLOUDINARY_CLOUD_NAME = 'dxhvg0tuo';
 	const CLOUDINARY_API_KEY = '525634432671769';
 	const CLOUDINARY_API_SECRET = 'YYeeaBzlUjWylZNKUbIO9in-HGE';
@@ -22,17 +21,51 @@
 	  script.async = true;
 	  script.onload = () => {
 		uploadWidget = cloudinary.createUploadWidget(
-		  {
-			cloudName: CLOUDINARY_CLOUD_NAME,
-			uploadPreset: 'd4qzm6g2' // Replace with your upload preset name
-		  },
-		  (error, result) => {
-			if (!error && result && result.event === 'success') {
-			  console.log('Done! Here is the image info: ', result.info);
-			  fetchImages();
-			}
-		  }
-		);
+    {
+    cloudName: CLOUDINARY_CLOUD_NAME,
+    uploadPreset: 'd4qzm6g2', // Replace with your upload preset name
+    maxFileSize: 5242880, // Maximum file size in bytes (5MB in this example)
+    maxImageWidth: 4000, // Maximum image width in pixels
+    maxImageHeight: 4000, // Maximum image height in pixels
+    sources: ['local'], // Only allow local file uploads
+    multiple: false, // Only allow single file upload
+    resourceType: 'image', // Restrict uploads to image files
+    clientAllowedFormats: ['png', 'jpeg'], // Allow PNG and JPEG formats
+    maxFiles: 1, // Maximum number of files to upload (1 in this example)
+    cropping: false, // Disable image cropping
+    theme: 'minimal', // Use the minimal widget theme
+    showPoweredBy: false, // Hide the "Powered by Cloudinary" logo
+    text: {
+      en: {
+        local: {
+          browse: 'Choose Image', // Text for the file selection button
+          main_title: 'Upload an Image', // Text for the main title
+          powered_by: '', // Empty text to hide "Powered by Cloudinary" logo
+        },
+        queue: {
+          title: 'Upload Queue', // Text for the upload queue title
+          title_uploading_with_counter: 'Uploading {{num}} Images', // Text for the uploading title with counter
+          mini_title_uploading_with_counter: '{{num}} Uploading', // Text for the mini uploading title with counter
+        },
+        notifications: {
+          general_error: 'An error occurred', // Text for the general error notification
+          invalid_file_extension: 'Invalid file format. Only PNG and JPEG images are allowed.', // Text for the file extension error notification
+          max_file_size_exceeded: 'File size exceeds the maximum limit. Please choose a smaller file.', // Text for the file size error notification
+          image_dimensions_exceeded: 'Image dimensions exceed the maximum limit. Please choose a smaller image.', // Text for the image dimensions error notification
+          max_files_exceeded: 'You can only upload one file at a time.', // Text for the max files exceeded error notification
+        },
+      },
+    },
+  },
+  (error, result) => {
+    if (!error && result && result.event === 'success') {
+      console.log('Done! Here is the image info: ', result.info);
+      fetchImages();
+      uploadWidget.close(); // Close the upload widget after successful upload
+    }
+  }
+);
+
 	  };
 	  document.body.appendChild(script);
 	
@@ -112,9 +145,16 @@
 	  // Enable scrolling on the body after closing the lightbox
 	  document.body.style.overflow = 'auto';
 	}
+	
   </script>
 	  <h1 class="gallery-heading">SVELTE GALLERY</h1>
 	  
+	  <div class="upload-button-container">
+		<button id="upload_widget" class="upload-button" on:click={openWidget}>
+		  Upload image
+		</button>
+	  </div>
+
 	  <div class="sort-button">
 		<button on:click={toggleSortOrder}>Sort</button>
 	  </div>
@@ -153,20 +193,23 @@
 		</div>
 	  {/if}
 	  
-	  <button id="upload_widget" class="upload-button" on:click={openWidget}>
-		Upload image
-	  </button>
+	  
+	<style>
+        .gallery-heading {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 50px;
+          font-style: italic;
+          color: blue;
+        }
 
-	  <style>
-		.gallery-heading {
-		   text-align: center;
-		   margin-top: 20px;
-		   font-size: 50px;
-		   font-style: italic;
-		   color: blue;
-		 }
- 
-		 .upload-button {
+		.upload-button-container {
+          display: flex;
+          justify-content: flex-start;
+          margin: 20px;
+        }
+
+        .upload-button {
 		   margin: 40px  20px;
 		   padding: 10px 20px;
 		   background-color: goldenrod;
@@ -175,10 +218,17 @@
 		   border-radius: 4px;
 		   cursor: pointer;
 		   position: absolute;
-		   top: 100px;
+		   top: 120px;
 		   right: 10px;
 		 }
-	   
+
+        @media (max-width: 768px) {
+        .upload-button-container {
+          justify-content: center;
+           margin-top: 20px;
+          }
+        }
+
 		 .image-grid {
 		   display: grid;
 		   grid-template-columns: repeat(3, minmax(200px, 1fr));
@@ -322,4 +372,4 @@
 		   max-width: 100%;
 		   max-height: 100%;
 		 }
-	   </style>
+	</style>
