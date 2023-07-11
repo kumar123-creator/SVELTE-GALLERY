@@ -72,21 +72,22 @@
 	  fetchImages();
 	});
 	
-	async function fetchImages() {
-	  const response = await fetch(
-		`https://cors-anywhere.herokuapp.com/https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/image?max_results=100`,
-		{
-		  headers: {
-			Authorization: `Basic ${btoa(`${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}`)}`,
-		  },
-		}
-	  );
-	
-	  const data = await response.json();
-	  images = data.resources;
-	  updatePagination();
-	  filterImages();
-	}
+  async function fetchImages() {
+  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  const apiUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/image?max_results=100`;
+
+  const response = await fetch(proxyUrl + apiUrl, {
+    headers: {
+      Authorization: `Basic ${btoa(`${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}`)}`,
+    },
+  });
+
+  const data = await response.json();
+  images = data.resources;
+  updatePagination();
+  filterImages();
+}
+
 	
 	function filterImages() {
 	  filteredImages = images
