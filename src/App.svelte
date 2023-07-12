@@ -148,6 +148,8 @@
 	}
 	
   </script>
+
+  <main>
 	  <h1 class="gallery-heading">SVELTE GALLERY</h1>
 	  
 	  <div class="upload-button-container">
@@ -193,7 +195,7 @@
 		  </div>
 		</div>
 	  {/if}
-	  
+	  </main>
 	  
 	<style>
         .gallery-heading {
